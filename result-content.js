@@ -7,3 +7,16 @@ export function getResultContent(e){
  if(e===50)return {side:null,title:'两种充能方式，恰好平衡。',copy:'这次回答没有明显偏向 E 或 I。你可以结合平时的感受，观察自己更常在哪种环境里恢复状态。',types:[]};
  const side=e>50?'E':'I';return {side,...resultContent[side]};
 }
+
+export const perceptionContent = {
+ N:{title:'直觉探索（N）',copy:'你更倾向于关注信息之间的联系、整体模式与未来可能性。面对新事物时，你常会追问背后的含义，联想到不同的发展方向，并通过想象与新观点探索世界。这里的直觉指信息偏好，不是情绪化判断。'},
+ S:{title:'实感观察（S）',copy:'你更倾向于关注可观察的事实、具体细节与实际经验。面对新事物时，你常会从眼前的信息出发，通过实例、实践和清晰步骤理解情况，把想法落实到现实。这里的实感指信息偏好，不代表缺乏想象力。'}
+};
+export function getCombinedResult(r){
+ const energy=getResultContent(r.e);
+ if(!Number.isFinite(r.n)||r.n<0||r.n>100)throw new Error('Invalid percentage');
+ const ns=r.n===50?null:r.n>50?'N':'S';
+ const perception=ns?{side:ns,...perceptionContent[ns]}:{side:null,title:'两种观察方式，恰好平衡。',copy:'这次回答对 N 和 S 的支持相同。你可能会随着情境，在具体经验与整体可能性之间切换。'};
+ const types=[...resultContent.E.types,...resultContent.I.types].filter(t=>(!energy.side||t[0]===energy.side)&&(!ns||t[1]===ns));
+ return {energy,perception,code:(energy.side||'X')+(ns||'X'),types};
+}
