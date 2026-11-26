@@ -73,3 +73,8 @@ body,body *{font-weight:700}
 .report-notice,.report-delivery{font-size:12px;color:var(--muted)}.report-notice a{color:var(--brand)}.report-delivery{margin-top:24px}.report-delivery button{margin-top:8px}
 
 .tie-question{border:0;border-bottom:1px solid var(--line);padding:22px 0;margin:0}.tie-question legend{color:var(--brand);font-size:15px}.tie-question label{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;margin:12px 0;background:var(--paper);cursor:pointer}.tie-question input{accent-color:var(--brand);width:18px;height:18px;flex:none}.tie-question span{font-size:13px}.tie-question label:has(input:checked){border-color:var(--brand);background:#efe4d9}.tie-question input:focus-visible{outline:2px solid var(--brand);outline-offset:3px}#tie-feedback{font-size:12px;color:var(--muted)}
+
+/* Keep the accessible native range interactive, but never paint its iOS thumb. */
+.scale input[type="range"]{opacity:0;-webkit-appearance:none;appearance:none;border:0;box-shadow:none;-webkit-tap-highlight-color:transparent}
+.scale input[type="range"]::-webkit-slider-thumb{background:transparent;border:0;border-radius:50%;box-shadow:none;-webkit-box-shadow:none}
+.scale input[type="range"]::-moz-range-thumb{background:transparent;border:0;border-radius:50%;box-shadow:none}
