@@ -21,12 +21,16 @@ export const lifestyleContent={
  P:{title:'灵活探索（P）',copy:'你更倾向于保留选择、随着新信息调整方向，并按当下情况灵活行动。开放的空间能帮助你探索不同可能。这不代表你缺乏责任感或无法完成计划。'}
 };
 const allTypes=[...resultContent.E.types,...resultContent.I.types];
-export function getCombinedResult(r){
+export function getCombinedResult(r,tieChoices={}){
  for(const v of [r.e,r.n,r.t,r.j])if(!Number.isFinite(v)||v<0||v>100)throw new Error('Invalid percentage');
- const sides=[r.e,r.n,r.t,r.j].map((v,i)=>v===50?null:(v>50?['E','N','T','J']:['I','S','F','P'])[i]);
- const energy=getResultContent(r.e);
+ const sides=[r.e,r.n,r.t,r.j].map((v,i)=>v===50?(['EI','NS','TF','JP'][i].split('').includes(tieChoices[['ei','ns','tf','jp'][i]])?tieChoices[['ei','ns','tf','jp'][i]]:null):(v>50?['E','N','T','J']:['I','S','F','P'])[i]);
+ const energy=getResultContent(r.e===50&&sides[0]?(sides[0]==='E'?51:49):r.e);
  const perception=sides[1]?{side:sides[1],...perceptionContent[sides[1]]}:{side:null,title:'N / S · 暂无明显偏向',copy:'这次回答对具体经验与整体可能性的支持相同，保留两侧的类型。'};
  const decision=sides[2]?{side:sides[2],...decisionContent[sides[2]]}:{side:null,title:'T / F · 暂无明显偏向',copy:'这次回答对逻辑依据与价值感受的支持相同，保留两侧的类型。'};
  const lifestyle=sides[3]?{side:sides[3],...lifestyleContent[sides[3]]}:{side:null,title:'J / P · 暂无明显偏向',copy:'这次回答对有序安排与灵活探索的支持相同，保留两侧的类型。'};
- return {energy,perception,decision,lifestyle,code:sides.map(x=>x||'X').join(''),types:allTypes.filter(t=>sides.every((s,i)=>!s||t[i]===s))};
+ const confirmedAxes=['ei','ns','tf','jp'].filter((axis,i)=>[r.e,r.n,r.t,r.j][i]===50&&sides[i]);
+ for(const [i,content] of [energy,perception,decision,lifestyle].entries())if([r.e,r.n,r.t,r.j][i]===50&&sides[i])content.copy='原题得分为 50% / 50%；你在确认选择中更认同 '+sides[i]+'，因此本次采用这一方向。'+content.copy;
+ return {energy,perception,decision,lifestyle,confirmedAxes,code:sides.map(x=>x||'X').join(''),types:allTypes.filter(t=>sides.every((s,i)=>!s||t[i]===s))};
 }
+
+export function unresolvedAxes(r,tieChoices={}){return ['ei','ns','tf','jp'].filter((key,i)=>[r.e,r.n,r.t,r.j][i]===50&&!['EI','NS','TF','JP'][i].split('').includes(tieChoices[key]));}
